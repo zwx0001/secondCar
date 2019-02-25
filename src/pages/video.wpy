@@ -1,0 +1,15 @@
+<template>
+    <view>小视频</view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class Video extends wepy.page {
+  config = {
+    navigationBarTitleText: '小视频',
+    navigationBarBackgroundColor: '#3FB0FE',
+    navigationBarTextStyle: 'white'
+  };
+}
+</script>
+<style lang="less" scoped>
+</style>

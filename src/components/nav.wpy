@@ -1,0 +1,76 @@
+<template>
+  <view class="nav">
+    <repeat for="{{nav}}" key="index" index="index" item="item">
+      <repeat for="{{item}}" key="index" index="idx" item="itm">
+        <view
+          class="{{i===index?'{{itm.class}} active':'{{itm.class}}'}}"
+          @tap="handleClick({{index}},{{itm.params}})"
+        >{{itm.name}}</view>
+      </repeat>
+    </repeat>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { getdata, updata } from '../store/actions/counter';
+
+@connect(
+  {},
+  {
+    getdata,
+    updata
+  }
+)
+export default class Nav extends wepy.component {
+  data = {
+    nav: [],
+    i: 0
+  };
+  methods = {
+    handleClick(idx, opts) {
+      this.i = idx;
+      let app = wepy.$instance.globalData;
+      app.params.p = 1;
+      app = { ...JSON.parse(opts) };
+      this.methods.updata();
+      this.methods.getdata(JSON.parse(opts));
+    }
+  };
+  onLoad() {
+    let that = this;
+    wx.request({
+      url: 'https://car.yccapp.com/Wxapp/Question/category',
+      header: {
+        'content-type': 'application/json'
+      },
+      success(res) {
+        that.nav = res.data.data;
+        that.$apply();
+      }
+    });
+  }
+}
+</script>
+<style lang="less" scoped>
+.nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 32rpx;
+  color: gray;
+  height: 100rpx;
+  background: #fff;
+  view {
+    padding: 8rpx 25rpx;
+    border-radius: 30rpx;
+  }
+  view.active {
+    color: #fff;
+    background: #fa7356;
+  }
+}
+</style>
+
+

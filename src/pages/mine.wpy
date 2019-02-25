@@ -1,0 +1,17 @@
+<template>
+    <view>未登录</view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class Mine extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的',
+    navigationBarBackgroundColor: '#3FB0FE',
+    navigationBarTextStyle: 'white'
+  };
+}
+</script>
+<style lang="less" scoped>
+</style>
+
+

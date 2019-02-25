@@ -1,0 +1,159 @@
+<template>
+    <view class="wrap">
+        <view class="message">
+            <view>{{message_info}}</view>
+            <view style="margin-top:20rpx;">
+                <text>{{car_name}}</text>
+                <view>关注问题</view>
+            </view>
+        </view>
+        <view
+            style="padding:20rpx 30rpx;font-size:32rpx;color:gray;"
+        >{{answer_list['total_num']}}条回答</view>
+        <view class="answer">
+            <repeat for="{{msg}}" key="index" index="index" item="item">
+                <view class="answer-item">
+                    <view>
+                        <image
+                        src="{{item['tech_info']['head_img']}}"
+                        mode="scaleToFill"
+                        lazy-load="false"
+                        />
+                        <view style="line-height:50rpx;">
+                            <view>{{item['tech_info']['username']}}</view>
+                            <text>{{item['tech_info']['user_desc']}}</text>
+                        </view>
+                    </view>
+                    <view>{{item['answer_info'][0]['keyword']}}</view>
+                </view>
+            </repeat>
+        </view>
+        <view class="foot">
+            <view style="background:#FF9130" class="iconfont icon-touzilicai">我要提问</view>
+            <view style="background:#F75F48" class="iconfont icon-xiaoxi">我来回答</view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class Detail extends wepy.page {
+  config = {
+    navigationBarTitleText: '详情',
+    navigationBarBackgroundColor: '#3FB0FE',
+    navigationBarTextStyle: 'white'
+  };
+  data = {
+    message_info: '',
+    car_name: '',
+    answer_list: {},
+    msg: []
+  };
+  onLoad(options) {
+    let that = this;
+    let { id } = options;
+    wx.request({
+      url: 'https://car.yccapp.com/Wxapp/Question/detail',
+      data: {
+        id: id,
+        p: 1,
+        page_size: 10
+      },
+      header: {
+        'content-type': 'application/json'
+      },
+      success(res) {
+        that.message_info = res.data.data['message_info']['keyword'];
+        that.car_name = res.data.data['message_info']['car_name'];
+        that.answer_list = res.data.data['answer_list'];
+        that.msg = res.data.data['answer_list']['total_answer'];
+        that.msg.map(item=>{
+          item['answer_info'][0]['keyword']=item['answer_info'][0]['keyword'].slice(21,-4)
+        })
+        that.$apply();
+      }
+    });
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '../icon/iconfont.wxss';
+.wrap {
+  background: #eee;
+}
+.message {
+  padding: 20rpx;
+  background: #fff;
+  font-size: 38rpx;
+  line-height: 60rpx;
+  font-weight: bold;
+  > view:nth-child(2) {
+    font-size: 30rpx;
+    font-weight: normal;
+    display: flex;
+    justify-content: space-between;
+    color: gray;
+    align-items: center;
+    line-height: 100rpx;
+    view {
+      border: solid 1rpx red;
+      border-radius: 40rpx;
+      height: 50rpx;
+      line-height: 50rpx;
+      padding: 5rpx 20rpx;
+      color: red;
+    }
+  }
+}
+.foot {
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background: pink;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100rpx;
+  view {
+    height: 100%;
+    width: 50%;
+    text-align: center;
+    color: #fff;
+    font-size: 35rpx;
+    line-height: 100rpx;
+  }
+}
+.answer {
+  margin-bottom: 100rpx;
+}
+.answer-item {
+  border-bottom: solid 1rpx #ccc;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  view:nth-child(1) {
+    display: flex;
+
+    image {
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 50%;
+      margin-right: 20rpx;
+      position: relative;
+      top: 25rpx;
+    }
+    view {
+      font-size: 35rpx;
+      font-weight: bold;
+    }
+    text {
+      font-size: 30rpx;
+      color: gray;
+      font-weight: normal;
+    }
+  }
+  view:nth-child(2) {
+    margin-top: 20rpx;
+    line-height: 50rpx;
+  }
+}
+</style>

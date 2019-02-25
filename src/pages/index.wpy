@@ -1,0 +1,198 @@
+<template>
+  <view class="wrap">
+    <scroll-view scroll-y scroll-with-animation @scroll="scroll" bindscrolltolower="scrollBottom">
+      <view>
+        <view class="top">
+          <view class="ipt">
+            <text class="iconfont icon-fangdajing"></text>
+            <text>车遇到问题啦？赶紧问问我……</text>
+          </view>
+        </view>
+        <swiper autoplay="true" interval="5000" duration="5000" circular="true">
+          <block wx:for="{{slides}}" wx:key="{{index}}}">
+            <swiper-item>
+              <image src="{{item.slide_pic}}" class="slide-image" width="355" height="150" />
+            </swiper-item>
+          </block>
+        </swiper>
+        <view class="tit">
+          <text>专业技师一对一解答</text>
+          <text>7*24小时服务</text>
+          <text>服务1200万+用户</text>
+        </view>
+        <view class="entry">
+          <repeat for="{{entry}}" key="index" index="index" item="item">
+            <view class="dl">
+              <view class="dd">
+                <image src="{{item.icon}}" mode="scaleToFill" lazy-load="false"/>
+              </view>
+              <view class="dt">{{item.title}}</view>
+            </view>
+          </repeat>
+        </view>
+        <view class="content">
+          <Nav class="{{flag?'scrTop active':'scrTop'}}"></Nav>
+          <List></List>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import List from '../components/lists';
+import Nav from '../components/nav';
+import { connect } from 'wepy-redux';
+import { getdata } from '../store/actions/counter';
+@connect(
+  {},
+  {
+    getdata
+  }
+)
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '二手车',
+    navigationBarBackgroundColor: '#3FB0FE',
+    navigationBarTextStyle: 'white'
+  };
+  components = {
+    Nav,
+    List
+  };
+  data = {
+    entry: [],
+    slides: [],
+    initTop: 0,
+    flag: false,
+    params: {}
+  };
+  methods = {
+    scroll(e) {
+      if (e.detail.scrollTop >= this.initTop) {
+        this.flag = true;
+      } else {
+        this.flag = false;
+      }
+    },
+    scrollBottom(e) {
+      let app = wepy.$instance.globalData;
+      app.params.p += 1;
+      this.methods.getdata(app.params, app.params.p);
+      wx.showLoading({
+        title: '加载中'
+      });
+
+      setTimeout(function() {
+        wx.hideLoading();
+      }, 2000);
+    }
+  };
+  onLoad() {
+    let that = this;
+
+    wx.request({
+      url: 'https://car.yccapp.com/Wxapp/Api/index_tab',
+
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success(res) {
+        that.entry = res.data.data.entry;
+        that.$apply();
+      }
+    });
+    wx.request({
+      url: 'https://car.yccapp.com/Wxapp/Common/slides?type=wx-ask-home',
+      header: {
+        'content-type': 'application/json'
+      },
+      success(res) {
+        that.slides = res.data.slides;
+        that.$apply();
+      }
+    });
+    const query = wx.createSelectorQuery();
+    const nodeRedf = query.select('.scrTop');
+    nodeRedf
+      .fields(
+        {
+          size: true,
+          rect: true
+        },
+        function(res) {
+          that.initTop = res.top;
+        }
+      )
+      .exec();
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '../icon/iconfont.wxss';
+.wrap {
+  background: #eee;
+  height: 100%;
+  scroll-view {
+    height: 100%;
+  }
+}
+swiper {
+  height: 250rpx;
+  image {
+    height: 100%;
+  }
+}
+.top {
+  background: #3fb0fe;
+  .ipt {
+    width: 70%;
+    height: 80rpx;
+    border-radius: 40rpx;
+    background: #f4f6f5;
+    line-height: 80rpx;
+    font-size: 30rpx;
+    padding: 0 30rpx;
+    color: gray;
+    margin-left: 26rpx;
+    text:nth-child(1) {
+      font-size: 30rpx;
+      margin-right: 10rpx;
+    }
+  }
+  image {
+    height: 220rpx;
+  }
+}
+.tit {
+  font-size: 30rpx;
+  color: gray;
+  display: flex;
+  justify-content: space-around;
+  line-height: 150rpx;
+  background: #fff;
+}
+.entry {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 28rpx;
+  color: gray;
+  background: #fff;
+  padding-bottom: 40rpx;
+  image {
+    width: 80rpx;
+    height: 80rpx;
+  }
+}
+.content {
+  margin-top: 30rpx;
+  .active {
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+}
+</style>
+
+

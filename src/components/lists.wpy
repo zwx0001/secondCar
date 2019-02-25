@@ -1,0 +1,89 @@
+<template>
+    <view class="list">
+        <repeat for="{{array}}" key="{{item.id}}" index="index" item="item">
+            <view class="list-item" @tap="handleClick({{item.id}})">
+                <view style="font-size:38rpx;font-weight:bold;line-height:60rpx;">{{item.keyword}}</view>
+                <view style="line-height:70rpx;">
+                    <image
+                src="{{item['message_user']['head_img']}}"
+                mode="scaleToFill"
+                lazy-load="false"
+                    >
+                    <text
+                        style="color:#ccc;font-size:32rpx;margin-left:30rpx;"
+                    >{{item['message_user']['name']}}</text>
+                </view>
+                <view
+                    class="answer_info"
+                    style="font-size:36rpx;line-height:60rpx;"
+                >{{item['reply_info']['keyword']}}</view>
+                <view class="comment">
+                    <text>{{item['car_name']}}</text>
+                    <text>{{item['create_time']}}</text>
+                </view>
+            </view>
+        </repeat>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { connect } from 'wepy-redux';
+import { getdata } from '../store/actions/counter';
+@connect(
+  {
+    array: function(state) {
+      return state.counter;
+    }
+  },
+  {
+    getdata
+  }
+)
+export default class List extends wepy.component {
+  onLoad() {
+    this.methods.getdata();
+  }
+  methods = {
+    handleClick(id) {
+      wx.navigateTo({
+        url: '../pages/detail?id=' + id
+      });
+    }
+  };
+}
+</script>
+<style lang="less" scoped>
+.list-item {
+  padding: 25rpx;
+  margin-bottom: 20rpx;
+  background: #fff;
+}
+image {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.comment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 32rpx;
+  color: #ccc;
+  line-height: 80rpx;
+}
+.answer_info {
+  overflow: hidden;
+  text-overflow: ellipsis; //文本溢出显示省略号
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  width: 100%;
+}
+</style>
+
+
+
+
+

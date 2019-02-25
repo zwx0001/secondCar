@@ -1,0 +1,15 @@
+<template>
+    <view>消息</view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class Message extends wepy.page {
+  config = {
+    navigationBarTitleText: '消息',
+    navigationBarBackgroundColor: '#3FB0FE',
+    navigationBarTextStyle: 'white'
+  };
+}
+</script>
+<style lang="less" scoped>
+</style>
